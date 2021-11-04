@@ -1,0 +1,43 @@
+  //The meam.h file needs to contain the below updates to the fcut and dfcut functions.
+  
+  // Cutoff function
+  //
+  static double fcut(const double xi)
+  { 
+    double a; 
+    if (xi >= 1.0)
+      return 1.0;
+    else if (xi <= 0.0)
+      return 0.0;
+    else {
+      // ( 1.d0 - (1.d0 - xi)**4 )**2, but with better codegen
+      a = 1.0 - xi;
+      a = a*a*a;
+      a *= a; 
+      a = 1.0 - a;
+      return a * a;
+    }
+  }
+
+  //-----------------------------------------------------------------------------
+  // Cutoff function and derivative
+  //
+  static double dfcut(const double xi, double &dfc)
+  {
+    double a, a5, a6, a1m6;
+    if (xi >= 1.0) {
+      dfc = 0.0;
+      return 1.0;
+    } else if (xi <= 0.0) {
+      dfc = 0.0;
+      return 0.0;
+    } else {
+      a = 1.0 - xi;
+      a5 = a * a * a * a * a;
+      a6 = a * a5;
+      a1m6 = 1.0 - a6;
+
+      dfc = 12 * a1m6 * a5;
+      return a1m6 * a1m6;
+    }
+  }
